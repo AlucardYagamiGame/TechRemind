@@ -1,20 +1,22 @@
-name: PR description
+name: PR
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, edited, reopened, synchronize]
 
 permissions:
   contents: read
   pull-requests: write
 
 jobs:
-  describe:
+  title-and-description:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v8
         with:
           script: |
+            const VALID_TITLE =
+              /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\((web|api|e2e|docs|db|deps|release)\))?!?: .{1,72}$/;
             const START = '<!-- auto:start -->';
             const END = '<!-- auto:end -->';
             const AREAS = ['web', 'api', 'e2e', 'docs', 'data', 'ci', 'root'];
@@ -32,14 +34,30 @@ jobs:
             const pullNumber = context.payload.pull_request.number;
             const params = { ...context.repo, pull_number: pullNumber, per_page: 100 };
 
-            // Read the current description, not the one from the event:
-            // you may have edited it since the PR was opened.
+            // Read the current PR, not the one from the event:
+            // you may have edited it since.
             const { data: pr } = await github.rest.pulls.get({ ...context.repo, pull_number: pullNumber });
             const commits = await github.paginate(github.rest.pulls.listCommits, params);
             const files = await github.paginate(github.rest.pulls.listFiles, params);
+            const subjects = commits.map((c) => c.commit.message.split('\n')[0]);
 
-            const commitLines = commits.map((c) => `- ${c.commit.message.split('\n')[0]}`);
+            // 1. Title
+            let title = pr.title;
+            if (!VALID_TITLE.test(title)) {
+              const today = new Date().toISOString().slice(0, 10);
+              const [type, ...rest] = pr.head.ref.split('/');
+              const fromBranch = `${type}: ${rest.join(' ').replace(/-/g, ' ')}`;
 
+              if (pr.head.ref === 'develop' && pr.base.ref === 'master') {
+                title = `chore(release): ${today}`;
+              } else if (subjects.some((s) => VALID_TITLE.test(s))) {
+                title = subjects.find((s) => VALID_TITLE.test(s));
+              } else if (rest.length && VALID_TITLE.test(fromBranch)) {
+                title = fromBranch;
+              }
+            }
+
+            // 2. Description
             const fileLines = AREAS.flatMap((area) => {
               const list = files
                 .filter((f) => areaOf(f.filename) === area)
@@ -51,7 +69,7 @@ jobs:
               START,
               '**Commits**',
               '',
-              ...commitLines,
+              ...subjects.map((s) => `- ${s}`),
               '',
               '**Files by area**',
               '',
@@ -62,7 +80,7 @@ jobs:
             let body = (pr.body ?? '').replace(/\r\n/g, '\n');
 
             if (body.includes(START) && body.includes(END)) {
-              // Later pushes: replace the old block.
+              // Later runs: replace the old block.
               const from = body.indexOf(START);
               const to = body.indexOf(END) + END.length;
               body = body.slice(0, from) + block + body.slice(to);
@@ -78,4 +96,16 @@ jobs:
               body = `${body.trim()}\n\n## Changes\n\n${block}\n`.trimStart();
             }
 
-            await github.rest.pulls.update({ ...context.repo, pull_number: pullNumber, body });
+            if (title !== pr.title || body !== (pr.body ?? '').replace(/\r\n/g, '\n')) {
+              await github.rest.pulls.update({ ...context.repo, pull_number: pullNumber, title, body });
+            }
+
+            // 3. Check the final title
+            if (VALID_TITLE.test(title)) {
+              core.info(`PR title: ${title}`);
+            } else {
+              core.setFailed(
+                `PR title does not follow Conventional Commits: ${title}\n` +
+                  'Expected: type(scope): subject   e.g. feat(api): add login endpoint',
+              );
+            }
