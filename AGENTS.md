@@ -46,6 +46,7 @@ Full rules: `docs/git-workflow.md`.
 
 - `master` = production (deployed), `develop` = integration. Work branches are cut from `develop` and named `<type>/<short-name>` (e.g. `feat/question-list`). PRs go into `develop`; releases are PRs `develop` → `master`.
 - Commit messages and PR titles use Conventional Commits: `type(scope): subject` (types `feat`, `fix`, `docs`, `refactor`, `test`, `perf`, `build`, `ci`, `chore`, `style`, `revert`; scopes `web`, `api`, `e2e`, `docs`, `db`, `deps`). Imperative, lowercase, no trailing period, max 72 characters.
+- Update work branches with `git rebase origin/develop`, never by merging `develop` into them; never rebase `develop` or `master`.
 - When asked to open a PR, fill in `.github/pull_request_template.md` from the commits and the diff, with real results of the checks you ran.
 
 ## Testing expectations
