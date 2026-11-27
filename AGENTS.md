@@ -40,6 +40,14 @@ docs/       requirements.md (what to build), architecture.md (decisions), glossa
 - Keep `export const app`, `serveFrontend` and the `import.meta.main` check in `apps/api/src/server.ts` so tests can import the app without starting a server and production can serve the frontend.
 - Put tests next to the code: `*.test.ts(x)`. E2E tests go in `e2e/*.spec.ts`.
 
+## Git workflow
+
+Full rules: `docs/git-workflow.md`.
+
+- `master` = production (deployed), `develop` = integration. Work branches are cut from `develop` and named `<type>/<short-name>` (e.g. `feat/question-list`). PRs go into `develop`; releases are PRs `develop` → `master`.
+- Commit messages and PR titles use Conventional Commits: `type(scope): subject` (types `feat`, `fix`, `docs`, `refactor`, `test`, `perf`, `build`, `ci`, `chore`, `style`, `revert`; scopes `web`, `api`, `e2e`, `docs`, `db`, `deps`). Imperative, lowercase, no trailing period, max 72 characters.
+- When asked to open a PR, fill in `.github/pull_request_template.md` from the commits and the diff, with real results of the checks you ran.
+
 ## Testing expectations
 
 - Every new behaviour gets tests: success, error and edge cases.

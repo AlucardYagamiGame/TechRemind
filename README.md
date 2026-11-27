@@ -43,7 +43,7 @@ Details: [docs/development.md](docs/development.md).
 apps/web/        React 19 + Vite + Tailwind CSS frontend
 apps/api/        Express 5 backend (one endpoint: GET /api/version)
 e2e/             Playwright end-to-end tests
-docs/            requirements.md, architecture.md, glossary.md, development.md, guide/, demo/ (webinar notes)
+docs/            requirements.md, architecture.md, glossary.md, development.md, git-workflow.md, guide/, demo/ (webinar notes)
 .opencode/       AI agents (analyst; subagents frontend, backend, reviewer) and commands (/plan-feature, /implement, /verify)
 AGENTS.md        rules for AI agents
 opencode.jsonc   OpenCode configuration and permissions

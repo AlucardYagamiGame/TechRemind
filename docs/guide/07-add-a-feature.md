@@ -28,9 +28,11 @@ Mark the feature file as "in progress". Do not write code.
 **Expected agent behavior:** questions first, then changes only in `docs/requirements.md`. Review the diff and commit it on a new branch:
 
 ```bash
-git switch -c feature/<short-name>
+git switch develop
+git pull
+git switch -c feat/<short-name>
 git add docs/requirements.md
-git commit -m "Add requirements for <feature>"
+git commit -m "docs(docs): add requirements for <feature>"
 ```
 
 ## 7.3 Plan → implement → verify
@@ -50,7 +52,7 @@ Then `/implement` (step by step), check in the browser, and `/verify`.
 ## 7.4 Ask for an explicit review
 
 ```text
-Use the reviewer subagent to review all changes on this branch compared to main.
+Use the reviewer subagent to review all changes on this branch compared to develop.
 Focus on: bugs, missing tests, broken existing features, mismatch with docs/requirements.md.
 ```
 
@@ -65,7 +67,7 @@ Check docs/architecture/ against the current code. Update the API endpoints and 
 and add decision log entries for decisions made in this feature. Do not change code.
 ```
 
-Commit, push, open a pull request in your repository, merge.
+Commit, push, open a pull request into `develop` in your repository, squash-merge. Release to `master` with a PR `develop` → `master` (see [docs/git-workflow.md](../git-workflow.md)).
 
 ## ✅ Result
 

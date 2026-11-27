@@ -1,0 +1,885 @@
+{
+  "topics": [
+    {
+      "slug": "javascript",
+      "name": {
+        "uk": "JavaScript",
+        "en": "JavaScript"
+      },
+      "description": {
+        "uk": "Event loop, замикання, прототипи, асинхронність та поведінка типів.",
+        "en": "Event loop, closures, prototypes, async execution, and type behavior."
+      },
+      "quizEnabled": true
+    },
+    {
+      "slug": "react",
+      "name": {
+        "uk": "React",
+        "en": "React"
+      },
+      "description": {
+        "uk": "Хуки, рендеринг, мемоізація, ключі та керування станом.",
+        "en": "Hooks, rendering lifecycle, memoization, keys, and state management."
+      },
+      "quizEnabled": true
+    },
+    {
+      "slug": "sql-databases",
+      "name": {
+        "uk": "SQL та бази даних",
+        "en": "SQL & Databases"
+      },
+      "description": {
+        "uk": "Індекси, транзакції, JOIN-и та типові помилки проєктування запитів.",
+        "en": "Indexes, transactions, JOINs, and common query performance pitfalls."
+      },
+      "quizEnabled": true
+    },
+    {
+      "slug": "http-web-security",
+      "name": {
+        "uk": "HTTP та веб-безпека з архітектурою запитів клієнт-сервер",
+        "en": "HTTP, Web Security & Client-Server Request Architecture"
+      },
+      "description": {
+        "uk": "",
+        "en": ""
+      },
+      "quizEnabled": false
+    }
+  ],
+  "questions": [
+    {
+      "slug": "js-event-loop-microtasks",
+      "topicSlug": "javascript",
+      "prompt": {
+        "uk": "У чому різниця між мікротасками (microtasks) та макротасками (macrotasks) в Event Loop?",
+        "en": "What is the difference between microtasks and macrotasks in the JavaScript Event Loop?"
+      },
+      "answer": {
+        "uk": "Після виконання поточного синхронного стеку викликів Event Loop спершу повністю очищає чергу мікротасків (Promise.then, queueMicrotask), і лише потім бере одну макротаску (setTimeout, I/O, UI-подія).",
+        "en": "After the current call stack finishes, the Event Loop drains the entire microtask queue (Promise.then, queueMicrotask) before picking a single macrotask (setTimeout, I/O, UI event)."
+      },
+      "quizOptions": [
+        {
+          "uk": "Черга мікротасків очищається повністю перед кожною наступною макротаскою.",
+          "en": "The microtask queue is completely drained before each next macrotask.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Макротаски завжди мають вищий пріоритет за проміси.",
+          "en": "Macrotasks always run with higher priority than Promises.",
+          "isCorrect": false
+        },
+        {
+          "uk": "За один цикл Event Loop виконується одна мікротаска і всі макротаски.",
+          "en": "Each Event Loop tick runs one microtask and all queued macrotasks.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Мікротаски виконуються в окремому фоновому потоці браузера.",
+          "en": "Microtasks execute in a separate browser background thread.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Саме тому нескінченне додавання Promise.then блокує рендеринг і setTimeout.",
+        "en": "This is why recursively scheduling Promise.then starves rendering and setTimeout."
+      }
+    },
+    {
+      "slug": "js-closure-memory-leak",
+      "topicSlug": "javascript",
+      "prompt": {
+        "uk": "Що таке замикання (closure) і чому воно може призвести до витоку пам'яті?",
+        "en": "What is a closure and how can it cause a memory leak?"
+      },
+      "answer": {
+        "uk": "Замикання — це комбінація функції та її лексичного оточення, яке зберігає доступ до змінних зовнішньої функції після її завершення. Витік виникає, коли замикання надовго утримує посилання на великий об'єкт або DOM-вузол, які вже не потрібні.",
+        "en": "A closure is a function bundled with its lexical environment, retaining access to outer variables after the outer function returns. It can leak memory when a long-lived closure keeps references to large objects or detached DOM nodes."
+      },
+      "quizOptions": [
+        {
+          "uk": "Функція зберігає доступ до лексичного оточення зовнішньої функції, що може утримувати зайві об'єкти в пам'яті.",
+          "en": "A function retains access to its outer lexical environment, which can keep unused objects alive in memory.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Замикання копіює всі змінні за значенням при кожному виклику, подвоюючи пам'ять.",
+          "en": "A closure deep-copies every variable on each call, doubling memory usage.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Замикання працює тільки зі стрілковими функціями та вимикає збирач сміття.",
+          "en": "Closures only work with arrow functions and disable garbage collection.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "",
+        "en": ""
+      }
+    },
+    {
+      "slug": "js-equality-type-coercion",
+      "topicSlug": "javascript",
+      "prompt": {
+        "uk": "Чим відрізняються `==` і `===` та як працює приведення типів для `null == undefined`?",
+        "en": "How do `==` and `===` differ, and how does type coercion behave for `null == undefined`?"
+      },
+      "answer": {
+        "uk": "`===` перевіряє тип і значення без приведення, тоді як `==` приводить операнди за алгоритмом абстрактного порівняння. За специфікацією `null == undefined` повертає `true`, але жодне з них не дорівнює іншим значенням через `==`.",
+        "en": "`===` compares type and value without coercion, whereas `==` coerces operands via Abstract Equality Comparison. By spec, `null == undefined` is `true`, and neither equals any other value under `==`."
+      },
+      "quizOptions": [
+        {
+          "uk": "`null == undefined` дає `true`, а `null === undefined` дає `false`.",
+          "en": "`null == undefined` evaluates to `true`, while `null === undefined` evaluates to `false`.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Обидва вирази повертають `false`, бо це різні примітивні типи.",
+          "en": "Both expressions return `false` because they are distinct primitive types.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Оператор `==` приводить `null` до `0`, тому `null == 0` є `true`.",
+          "en": "`==` coerces `null` to `0`, making `null == 0` evaluate to `true`.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "У порівнянні `==` значення `null` та `undefined` дорівнюють лише одне одному, а не числу `0` чи порожньому рядку.",
+        "en": "Under `==`, `null` and `undefined` are only equal to each other, not to `0` or an empty string."
+      }
+    },
+    {
+      "slug": "js-this-arrow-function",
+      "topicSlug": "javascript",
+      "prompt": {
+        "uk": "Як визначається значення `this` у звичайній функції порівняно зі стрілковою функцією?",
+        "en": "How is `this` resolved in a regular function compared to an arrow function?"
+      },
+      "answer": {
+        "uk": "У звичайній функції `this` визначається способом виклику (динамічно: об'єкт перед крапкою, call/apply/bind, new або undefined у strict mode). Стрілкова функція власного `this` не має і бере його лексично із зовнішньої області видимості.",
+        "en": "A regular function binds `this` dynamically based on the call site (receiver object, call/apply/bind, new, or undefined in strict mode). An arrow function has no own `this` and captures it lexically from the enclosing scope."
+      },
+      "quizOptions": [
+        {
+          "uk": "Стрілкова функція успадковує `this` лексично із зовнішнього контексту і не змінює його через `.bind()`.",
+          "en": "An arrow function captures `this` lexically from its enclosing scope and ignores `.bind()`.",
+          "isCorrect": true
+        },
+        {
+          "uk": "У стрілковій функції `this` завжди вказує на глобальний об'єкт `window`.",
+          "en": "In an arrow function, `this` always points to the global `window` object.",
+          "isCorrect": false
+        },
+        {
+          "uk": "У звичайній функції `this` фіксується в момент оголошення функції.",
+          "en": "In a regular function, `this` is fixed at function declaration time.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Через це методи об'єкта не варто оголошувати стрілковими функціями, якщо потрібен доступ до самого об'єкта через `this`.",
+        "en": "Because of lexical binding, object methods should generally not be arrow functions if they rely on `this`."
+      }
+    },
+    {
+      "slug": "js-promise-combinators",
+      "topicSlug": "javascript",
+      "prompt": {
+        "uk": "Поясніть різницю між `Promise.all`, `Promise.allSettled` та `Promise.race`.",
+        "en": "Explain the difference between `Promise.all`, `Promise.allSettled`, and `Promise.race`."
+      },
+      "answer": {
+        "uk": "`Promise.all` відхиляється одразу при першій помилці; `Promise.allSettled` чекає завершення всіх промісів і повертає статуси кожного; `Promise.race` завершується з результатом першого виконаного або відхиленого промісу.",
+        "en": "`Promise.all` rejects immediately on the first rejection; `Promise.allSettled` waits for every promise and returns each outcome; `Promise.race` settles as soon as the first promise fulfills or rejects."
+      },
+      "quizOptions": [
+        {
+          "uk": "`Promise.allSettled` повертає масив об'єктів `{ status: 'fulfilled' | 'rejected', ... }` після завершення всіх промісів.",
+          "en": "`Promise.allSettled` resolves with `{ status: 'fulfilled' | 'rejected', ... }` objects after all promises settle.",
+          "isCorrect": true
+        },
+        {
+          "uk": "`Promise.race` ігнорує помилки й чекає першого успішного результату.",
+          "en": "`Promise.race` ignores rejections and waits for the first fulfilled promise.",
+          "isCorrect": false
+        },
+        {
+          "uk": "`Promise.all` повертає часткові результати навіть якщо один проміс впав.",
+          "en": "`Promise.all` returns partial results even if one promise rejects.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Для першого успішного результату використовується `Promise.any`, а не `Promise.race`.",
+        "en": "Waiting for the first fulfilled promise while ignoring rejections is `Promise.any`, not `Promise.race`."
+      }
+    },
+    {
+      "slug": "js-prototypal-inheritance",
+      "topicSlug": "javascript",
+      "prompt": {
+        "uk": "Як працює прототипне наслідування (`prototype` vs `__proto__` / `Object.getPrototypeOf`) в JavaScript?",
+        "en": "How does prototypal inheritance (`prototype` vs `Object.getPrototypeOf`) work in JavaScript?"
+      },
+      "answer": {
+        "uk": "Коли властивість не знайдена на самому об'єкті, рушій піднімається ланцюжком `[[Prototype]]` (`Object.getPrototypeOf`). Властивість `.prototype` існує у функцій-конструкторів/класів і стає прототипом створених через `new` екземплярів.",
+        "en": "When a property is missing on an object, JavaScript traverses its `[[Prototype]]` chain (`Object.getPrototypeOf`). A constructor or class's `.prototype` becomes the `[[Prototype]]` of instances created with `new`."
+      },
+      "quizOptions": [
+        {
+          "uk": "Пошук властивості йде вгору по ланцюжку `[[Prototype]]` до `null`.",
+          "en": "Property lookup walks up the `[[Prototype]]` chain until it finds the key or reaches `null`.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Класи ES6 копіюють усі методи в кожен екземпляр, не використовуючи прототипи.",
+          "en": "ES6 classes copy every method onto each instance without using prototypes.",
+          "isCorrect": false
+        },
+        {
+          "uk": "`Object.create(null)` успадковує `toString` і `hasOwnProperty` від `Object.prototype`.",
+          "en": "`Object.create(null)` inherits `toString` and `hasOwnProperty` from `Object.prototype`.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "`class` у JS — це синтаксичний цукор поверх прототипної моделі.",
+        "en": "JS `class` syntax is built on top of prototypes."
+      }
+    },
+    {
+      "slug": "js-shallow-vs-deep-copy",
+      "topicSlug": "javascript",
+      "prompt": {
+        "uk": "Чим поверхневе копіювання (`Object.assign`, spread) відрізняється від глибокого (`structuredClone`)?",
+        "en": "How does shallow copying (`Object.assign`, spread) differ from deep cloning (`structuredClone`)?"
+      },
+      "answer": {
+        "uk": "Поверхнева копія дублює лише верхній рівень властивостей, тому вкладені об'єкти й масиви лишаються спільними посиланнями. `structuredClone` рекурсивно створює незалежні копії вкладених структур (включно з Map, Set, Date), але не клонує функції.",
+        "en": "Shallow copy duplicates only top-level properties, sharing references to nested objects and arrays. `structuredClone` recursively creates independent copies of nested data (including Map, Set, Date), though it cannot clone functions."
+      },
+      "quizOptions": [
+        {
+          "uk": "При поверхневому копіюванні вкладені об'єкти залишаються посиланнями на ті самі дані.",
+          "en": "With shallow copying, nested objects still share references to the original data.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Оператор spread `{ ...obj }` виконує повне глибоке копіювання на будь-яку глибину.",
+          "en": "The spread operator `{ ...obj }` performs a full deep clone at all nesting levels.",
+          "isCorrect": false
+        },
+        {
+          "uk": "`structuredClone` без помилок клонує функції та DOM-вузли.",
+          "en": "`structuredClone` clones functions and DOM nodes without errors.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "",
+        "en": ""
+      }
+    },
+    {
+      "slug": "js-abort-controller",
+      "topicSlug": "javascript",
+      "prompt": {
+        "uk": "Що таке `AbortController` і як він допомагає уникати race condition при запитах?",
+        "en": "What is `AbortController` and how does it prevent race conditions in async requests?"
+      },
+      "answer": {
+        "uk": "`AbortController` створює `AbortSignal`, який передається у `fetch` або слухачі подій. При новому пошуковому запиті можна скасувати попередній незавершений `fetch`, щоб старіша, але повільніша відповідь не перезаписала новіший результат.",
+        "en": "`AbortController` provides an `AbortSignal` passed to `fetch` or event listeners. When a newer request starts, calling `abort()` cancels the stale in-flight request so a slower earlier response never overwrites newer UI state."
+      },
+      "quizOptions": [
+        {
+          "uk": "Дозволяє скасувати застарілий `fetch`-запит за допомогою `signal`, коли запущено новий.",
+          "en": "It lets you cancel an outdated `fetch` request via its `signal` when a newer request starts.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Автоматично повторює запит тричі при статусі `500`.",
+          "en": "It automatically retries a request three times on HTTP `500`.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Кешує відповідь `fetch` у `sessionStorage`.",
+          "en": "It caches `fetch` responses inside `sessionStorage`.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Скасований `fetch` відхиляє проміс із помилкою `AbortError`, яку треба відрізняти від реальної помилки мережі.",
+        "en": "An aborted `fetch` rejects with `AbortError`, which should be ignored rather than shown as a network failure."
+      }
+    },
+    {
+      "slug": "react-list-keys",
+      "topicSlug": "react",
+      "prompt": {
+        "uk": "Чому не варто використовувати індекс масиву як `key` у динамічних списках React?",
+        "en": "Why should you avoid using array indexes as `key` in dynamic React lists?"
+      },
+      "answer": {
+        "uk": "Якщо елементи додаються, видаляються або переставляються, індекси зміщуються, і React зіставляє старий локальний стан чи DOM-вузол з іншим елементом даних, що ламає інпути та анімації.",
+        "en": "When items are inserted, removed, or reordered, indexes shift and React reconciles existing state or DOM nodes with the wrong data items, causing bugs in inputs and animations."
+      },
+      "quizOptions": [
+        {
+          "uk": "При зміні порядку чи видаленні елементів індекси змінюються, і React може прив'язати старий стан до нового елемента.",
+          "en": "Reordering or removing items shifts indexes, causing React to reuse stale component state on the wrong item.",
+          "isCorrect": true
+        },
+        {
+          "uk": "React забороняє числові ключі і падає з помилкою в production-збірці.",
+          "en": "React forbids numeric keys and throws an error in production builds.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Використання індексу вимикає віртуальний DOM для всього списку.",
+          "en": "Using an index disables the Virtual DOM for the entire list.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Стабільний унікальний ID сутності гарантує коректне узгодження (reconciliation).",
+        "en": "A stable unique item ID keeps reconciliation tied to the actual data entity."
+      }
+    },
+    {
+      "slug": "react-usememo-usecallback",
+      "topicSlug": "react",
+      "prompt": {
+        "uk": "Чим `useMemo` відрізняється від `useCallback` і коли обидва зайві?",
+        "en": "How does `useMemo` differ from `useCallback`, and when are both unnecessary?"
+      },
+      "answer": {
+        "uk": "`useMemo` кешує результат обчислення функції, а `useCallback` кешує саме посилання на функцію між рендерами. Обидва зайві для дешевих обчислень або функцій, які не передаються в мемоізовані дочірні компоненти чи масиви залежностей.",
+        "en": "`useMemo` caches a computed return value, while `useCallback` caches the function reference itself across renders. Both add overhead when used on trivial calculations or callbacks not passed to memoized children or effect dependencies."
+      },
+      "quizOptions": [
+        {
+          "uk": "`useMemo` повертає закешоване значення, а `useCallback` повертає закешовану функцію.",
+          "en": "`useMemo` returns a memoized value, whereas `useCallback` returns a memoized function reference.",
+          "isCorrect": true
+        },
+        {
+          "uk": "`useCallback` кешує результат виклику асинхронної функції.",
+          "en": "`useCallback` caches the resolved result of an async function.",
+          "isCorrect": false
+        },
+        {
+          "uk": "`useMemo` повністю запобігає повторному рендеру самого компонента.",
+          "en": "`useMemo` prevents the component itself from ever re-rendering.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "",
+        "en": ""
+      }
+    },
+    {
+      "slug": "react-useeffect-cleanup",
+      "topicSlug": "react",
+      "prompt": {
+        "uk": "Навіщо повертати функцію очищення (cleanup function) з `useEffect`?",
+        "en": "Why should you return a cleanup function from `useEffect`?"
+      },
+      "answer": {
+        "uk": "Щоб скасувати підписки, таймери або HTTP-запити (AbortController) перед наступним запуском ефекту або розмонтуванням компонента і уникнути витоків пам'яті та race condition.",
+        "en": "To unsubscribe listeners, clear timers, or abort in-flight requests before the effect re-runs or the component unmounts, preventing memory leaks and race conditions."
+      },
+      "quizOptions": [
+        {
+          "uk": "Вона запускається перед повторним виконанням ефекту і при розмонтуванні компонента для очищення ресурсів.",
+          "en": "It runs before the effect re-executes and on unmount to clean up subscriptions, timers, or requests.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Вона викликається лише один раз після першого рендера сторінки.",
+          "en": "It runs only once immediately after the first render.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Вона скидає весь локальний `useState` компонента в початкові значення.",
+          "en": "It resets all `useState` hooks in the component back to initial values.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "У Strict Mode в розробці React спеціально запускає setup + cleanup двічі, щоб виявити відсутнє очищення.",
+        "en": "In development Strict Mode, React intentionally runs setup and cleanup twice to surface missing cleanups."
+      }
+    },
+    {
+      "slug": "react-controlled-inputs",
+      "topicSlug": "react",
+      "prompt": {
+        "uk": "Поясніть різницю між контрольованими (controlled) та неконтрольованими (uncontrolled) полями форми в React.",
+        "en": "Explain the difference between controlled and uncontrolled form inputs in React."
+      },
+      "answer": {
+        "uk": "У контрольованому полі значення керується через React state (`value` + `onChange`), що дає миттєву валідацію та синхронізацію. У неконтрольованому значення зберігається в самому DOM і зчитується через `ref` або `FormData` при сабміті.",
+        "en": "A controlled input stores its value in React state (`value` + `onChange`), enabling live validation and UI sync. An uncontrolled input keeps its value in the DOM and is read via `ref` or `FormData` on submit."
+      },
+      "quizOptions": [
+        {
+          "uk": "Контрольоване поле тримає значення у React state, а неконтрольоване — у DOM (через `ref` або `FormData`).",
+          "en": "A controlled input stores state in React, while an uncontrolled input keeps it in the DOM (read via `ref` or `FormData`).",
+          "isCorrect": true
+        },
+        {
+          "uk": "Неконтрольовані поля не можуть бути відправлені в HTML-формі.",
+          "en": "Uncontrolled inputs cannot be submitted inside an HTML form.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Контрольовані поля завжди швидші за неконтрольовані на великих формах.",
+          "en": "Controlled inputs always outperform uncontrolled inputs on huge forms.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Для простих форм `FormData` зменшує кількість зайвих ре-рендерів.",
+        "en": "For simple forms, `FormData` avoids re-rendering on every keystroke."
+      }
+    },
+    {
+      "slug": "react-rules-of-hooks",
+      "topicSlug": "react",
+      "prompt": {
+        "uk": "Чому не можна викликати хуки (`useState`, `useEffect`) всередині умов чи циклів?",
+        "en": "Why cannot React hooks (`useState`, `useEffect`) be called inside conditions or loops?"
+      },
+      "answer": {
+        "uk": "React ідентифікує стан кожного хука за порядком його виклику між рендерами. Якщо порядок або кількість викликів змінюються, стан одного хука зміщується і потрапляє в інший.",
+        "en": "React tracks each hook's state by its call index across renders. If the call order or count changes conditionally, hook slots shift and corrupt component state."
+      },
+      "quizOptions": [
+        {
+          "uk": "React прив'язує стан хуків до незмінного порядку їх виклику на кожному рендері.",
+          "en": "React relies on hooks being called in the exact same order on every render.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Хуки компілюються в глобальні змінні під час збірки Vite.",
+          "en": "Hooks are compiled into global variables at Vite build time.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Умовний виклик хука автоматично перетворює компонент на класовий.",
+          "en": "Calling a hook conditionally converts the component into a class component.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Умови можна писати всередині самого хука (наприклад, всередині `useEffect`), але не навколо нього.",
+        "en": "Put conditions inside the hook callback (such as inside `useEffect`), never around the hook call itself."
+      }
+    },
+    {
+      "slug": "react-state-batching",
+      "topicSlug": "react",
+      "prompt": {
+        "uk": "Чому оновлення стану `setCount(count + 1)` тричі поспіль у одному обробнику збільшить `count` лише на 1, і як це виправити?",
+        "en": "Why does calling `setCount(count + 1)` three times in one handler increment `count` only by 1, and how do you fix it?"
+      },
+      "answer": {
+        "uk": "У межах одного рендера `count` є незмінним знімком (snapshot), тож усі три виклики передають те саме значення `count + 1`. Виправлення — функціональне оновлення `setCount(prev => prev + 1)`.",
+        "en": "Within a single render, `count` is a fixed snapshot, so all three calls schedule `count + 1`. Use the functional updater `setCount(prev => prev + 1)` so each update receives the latest pending state."
+      },
+      "quizOptions": [
+        {
+          "uk": "`count` у замиканні рендера фіксований; треба передати функцію оновлення `prev => prev + 1`.",
+          "en": "`count` is fixed for that render snapshot; pass an updater function `prev => prev + 1`.",
+          "isCorrect": true
+        },
+        {
+          "uk": "React ігнорує більше одного виклику `setState` в одному компоненті.",
+          "en": "React ignores more than one `setState` call per component.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Потрібно обернути кожен виклик у `useMemo`.",
+          "en": "Each call must be wrapped inside `useMemo`.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "",
+        "en": ""
+      }
+    },
+    {
+      "slug": "react-prop-drilling",
+      "topicSlug": "react",
+      "prompt": {
+        "uk": "Що таке prop drilling і які прості способи його уникнути в React?",
+        "en": "What is prop drilling and what are simple ways to avoid it in React?"
+      },
+      "answer": {
+        "uk": "Prop drilling — прокидання пропсів крізь кілька проміжних компонентів, яким ці дані не потрібні. Часто вирішується композицією компонентів (`children`) або `React.Context` для даних на кшталт теми, мови чи поточного користувача.",
+        "en": "Prop drilling is passing props through multiple intermediate components that do not use them. You can avoid it via component composition (`children`) or `React.Context` for app-wide data like theme, language, or auth user."
+      },
+      "quizOptions": [
+        {
+          "uk": "Передача пропсів крізь зайві проміжні рівні; вирішується композицією (`children`) або `Context`.",
+          "en": "Passing props through intermediate components that do not need them; solved via composition (`children`) or `Context`.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Ситуація, коли компонент змінює власні props напряму.",
+          "en": "When a component mutates its own props directly.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Помилка маршрутизації при передачі параметрів у URL.",
+          "en": "A routing error when passing query parameters in the URL.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Композиція часто краща за Context, бо не створює зайвих підписок на рендер.",
+        "en": "Composition is often simpler and avoids unnecessary Context re-renders."
+      }
+    },
+    {
+      "slug": "sql-inner-vs-left-join",
+      "topicSlug": "sql-databases",
+      "prompt": {
+        "uk": "У чому різниця між `INNER JOIN` та `LEFT JOIN` і де варто фільтрувати праву таблицю?",
+        "en": "What is the difference between `INNER JOIN` and `LEFT JOIN`, and where should you filter the right table?"
+      },
+      "answer": {
+        "uk": "`INNER JOIN` повертає лише рядки зі збігом в обох таблицях; `LEFT JOIN` зберігає всі рядки лівої таблиці, підставляючи `NULL` для відсутніх правих. Фільтрація правої таблиці у `WHERE` перетворює `LEFT JOIN` фактично на `INNER JOIN`, тому умову правої таблиці ставлять в `ON`.",
+        "en": "`INNER JOIN` returns only matching rows from both tables; `LEFT JOIN` keeps all left-table rows and fills missing right-table columns with `NULL`. Filtering the right table in `WHERE` discards the `NULL` rows and turns it into an `INNER JOIN`, so put right-table filters in `ON`."
+      },
+      "quizOptions": [
+        {
+          "uk": "Умова по правій таблиці в `WHERE` відсікає `NULL`-рядки і фактично перетворює `LEFT JOIN` на `INNER JOIN`.",
+          "en": "Filtering the right table in `WHERE` removes `NULL` rows and effectively turns a `LEFT JOIN` into an `INNER JOIN`.",
+          "isCorrect": true
+        },
+        {
+          "uk": "`LEFT JOIN` повертає тільки рядки, яких немає в правій таблиці.",
+          "en": "`LEFT JOIN` returns only rows that do not exist in the right table.",
+          "isCorrect": false
+        },
+        {
+          "uk": "`INNER JOIN` завжди швидший лише тому, що не використовує індекси.",
+          "en": "`INNER JOIN` is faster solely because it bypasses indexes.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Класична помилка на співбесідах — шукати користувачів з 0 замовлень, але фільтрувати `orders.status = 'paid'` у `WHERE`.",
+        "en": "A classic bug is trying to keep users with zero matching orders while filtering `orders.status = 'paid'` in `WHERE`."
+      }
+    },
+    {
+      "slug": "sql-btree-index",
+      "topicSlug": "sql-databases",
+      "prompt": {
+        "uk": "Як працює B-Tree індекс у PostgreSQL і чому він прискорює читання, але сповільнює запис?",
+        "en": "How does a B-Tree index work in PostgreSQL, and why does it speed up reads while slowing down writes?"
+      },
+      "answer": {
+        "uk": "B-Tree зберігає відсортовані ключі в збалансованому дереві, дозволяючи знаходити рядки за O(log N) без повного сканування таблиці. Під час `INSERT`/`UPDATE`/`DELETE` база мусить оновлювати не лише таблицю, а й кожен індекс на ній.",
+        "en": "A B-Tree stores sorted keys in a balanced tree, enabling O(log N) lookups and range queries without a full table scan. On `INSERT`/`UPDATE`/`DELETE`, PostgreSQL must also update every affected index."
+      },
+      "quizOptions": [
+        {
+          "uk": "Індекс дає пошук за O(log N), але кожен `INSERT`/`UPDATE`/`DELETE` потребує оновлення структури індексу.",
+          "en": "Indexes allow O(log N) lookups, but every `INSERT`/`UPDATE`/`DELETE` must also update the index structure.",
+          "isCorrect": true
+        },
+        {
+          "uk": "B-Tree індекс дублює всю таблицю на диск у текстовому форматі.",
+          "en": "A B-Tree index duplicates the entire table on disk as plain text.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Індекс прискорює лише `DELETE` і не впливає на `SELECT`.",
+          "en": "Indexes speed up `DELETE` only and have no effect on `SELECT`.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Окрім того, умови з провідним `%` у `LIKE '%text'` не можуть використати звичайний B-Tree індекс.",
+        "en": "Also note that leading wildcards like `LIKE '%text'` cannot use a standard B-Tree index."
+      }
+    },
+    {
+      "slug": "sql-n-plus-one",
+      "topicSlug": "sql-databases",
+      "prompt": {
+        "uk": "Що таке проблема N+1 запитів та як її усунути в бекенді?",
+        "en": "What is the N+1 query problem and how do you fix it in a backend service?"
+      },
+      "answer": {
+        "uk": "Це ситуація, коли застосунок виконує 1 запит за списком з N елементів, а потім у циклі ще N окремих запитів для дочірніх даних кожного елемента. Виправляється одним `JOIN`, батч-запитом `WHERE id = ANY(...)` / `IN (...)` або агрегацією на рівні SQL.",
+        "en": "It happens when an app executes 1 query for N parent rows and then N separate queries in a loop to load related data for each row. Fix it using a single `JOIN`, a batched `WHERE id = ANY(...)` / `IN (...)` query, or SQL aggregation."
+      },
+      "quizOptions": [
+        {
+          "uk": "1 запит для списку батьківських записів + N запитів у циклі; вирішується `JOIN` або батчевим `IN` / `ANY`.",
+          "en": "1 query for N parent rows followed by N loop queries; solved via `JOIN` or a batched `IN` / `ANY` query.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Помилка синтаксису SQL, коли таблиця має більше N+1 колонок.",
+          "en": "An SQL syntax error triggered when a table exceeds N+1 columns.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Вирішується лише додаванням кешу Redis без зміни запитів.",
+          "en": "It can only be solved by adding a Redis cache without changing queries.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Наприклад, підрахунок `Reviewed` і `Known` для всіх тем на дашборді варто робити одним зведеним SQL-запитом з `GROUP BY`.",
+        "en": "For example, Dashboard `Reviewed` and `Known` counts across all topics should be fetched in one aggregated `GROUP BY` query."
+      }
+    },
+    {
+      "slug": "sql-where-vs-having",
+      "topicSlug": "sql-databases",
+      "prompt": {
+        "uk": "Чим `WHERE` відрізняється від `HAVING` у SQL-запиті з групуванням?",
+        "en": "How does `WHERE` differ from `HAVING` in a grouped SQL query?"
+      },
+      "answer": {
+        "uk": "`WHERE` фільтрує окремі рядки до групування `GROUP BY` і не може містити агрегатних функцій (`COUNT`, `SUM`). `HAVING` фільтрує вже сформовані групи після `GROUP BY`.",
+        "en": "`WHERE` filters individual rows before `GROUP BY` and cannot reference aggregate functions (`COUNT`, `SUM`). `HAVING` filters grouped rows after `GROUP BY`."
+      },
+      "quizOptions": [
+        {
+          "uk": "`WHERE` фільтрує рядки до `GROUP BY`, а `HAVING` фільтрує вже згруповані результати.",
+          "en": "`WHERE` filters rows before `GROUP BY`, whereas `HAVING` filters groups after aggregation.",
+          "isCorrect": true
+        },
+        {
+          "uk": "`HAVING` виконується до `FROM` і замінює `WHERE`.",
+          "en": "`HAVING` runs before `FROM` and replaces `WHERE`.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Обидва речення виконуються після `ORDER BY`.",
+          "en": "Both clauses execute after `ORDER BY`.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "",
+        "en": ""
+      }
+    },
+    {
+      "slug": "sql-acid",
+      "topicSlug": "sql-databases",
+      "prompt": {
+        "uk": "Що означають чотири властивості транзакції ACID?",
+        "en": "What do the four ACID transaction properties mean?"
+      },
+      "answer": {
+        "uk": "Atomicity (усі операції або разом виконуються, або відкочуються), Consistency (перехід із валідного стану у валідний з урахуванням обмежень), Isolation (паралельні транзакції не спотворюють одна одну), Durability (після commit зміни збережені навіть після збою).",
+        "en": "Atomicity (all-or-nothing), Consistency (all constraints remain valid), Isolation (concurrent transactions do not corrupt each other), and Durability (committed data survives crashes)."
+      },
+      "quizOptions": [
+        {
+          "uk": "Atomicity, Consistency, Isolation, Durability — гарантії цілісності й надійності транзакції.",
+          "en": "Atomicity, Consistency, Isolation, and Durability—guarantees for reliable transaction execution.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Auth, Cache, Index, Dump — етапи резервного копіювання бази.",
+          "en": "Auth, Cache, Index, Dump—stages of backing up a database.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Набір правил для форматування імен таблиць у PostgreSQL.",
+          "en": "Naming rules for tables in PostgreSQL.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "Транзакції критичні при записі результатів сесії або пакетному імпорті питань.",
+        "en": "Transactions are essential when saving session outcomes or batch-importing questions."
+      }
+    },
+    {
+      "slug": "sql-delete-truncate-drop",
+      "topicSlug": "sql-databases",
+      "prompt": {
+        "uk": "У чому різниця між `DELETE`, `TRUNCATE` та `DROP TABLE`?",
+        "en": "What is the difference between `DELETE`, `TRUNCATE`, and `DROP TABLE`?"
+      },
+      "answer": {
+        "uk": "`DELETE` видаляє рядки за умовою `WHERE` (з тригерами й логуванням кожного рядка); `TRUNCATE` швидко очищає всі рядки таблиці, лишаючи її структуру; `DROP TABLE` видаляє і дані, і саму таблицю зі схемою та індексами.",
+        "en": "`DELETE` removes rows matching `WHERE` row-by-row; `TRUNCATE` quickly empties all rows while keeping the table definition; `DROP TABLE` deletes both the data and the table structure itself."
+      },
+      "quizOptions": [
+        {
+          "uk": "`DELETE` прибирає вибрані рядки, `TRUNCATE` очищає всі рядки зі збереженням схеми, `DROP` видаляє саму таблицю.",
+          "en": "`DELETE` removes selected rows, `TRUNCATE` empties all rows keeping the schema, and `DROP` removes the table itself.",
+          "isCorrect": true
+        },
+        {
+          "uk": "`TRUNCATE` підтримує фільтрацію через `WHERE`.",
+          "en": "`TRUNCATE` supports filtering via `WHERE`.",
+          "isCorrect": false
+        },
+        {
+          "uk": "`DROP TABLE` залишає індекси й обмеження таблиці в базі.",
+          "en": "`DROP TABLE` leaves the table's indexes and constraints intact.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "",
+        "en": ""
+      }
+    },
+    {
+      "slug": "sql-parameterized-queries",
+      "topicSlug": "sql-databases",
+      "prompt": {
+        "uk": "Навіщо потрібні параметризовані запити (prepared statements) замість конкатенації рядків?",
+        "en": "Why should you use parameterized queries instead of string concatenation?"
+      },
+      "answer": {
+        "uk": "Вони відокремлюють SQL-інструкцію від даних користувача, тому повністю блокують SQL-ін'єкції і дозволяють базі повторно використовувати план запиту.",
+        "en": "They separate SQL syntax from user-supplied values, preventing SQL injection and allowing the database to reuse query plans."
+      },
+      "quizOptions": [
+        {
+          "uk": "Запобігають SQL-ін'єкціям, бо значення передаються як дані, а не частина SQL-коду.",
+          "en": "They prevent SQL injection by passing parameters as data rather than executable SQL syntax.",
+          "isCorrect": true
+        },
+        {
+          "uk": "Дозволяють зберігати паролі в базі без хешування.",
+          "en": "They allow storing passwords in plaintext safely.",
+          "isCorrect": false
+        },
+        {
+          "uk": "Автоматично створюють індекси для кожної колонки в `WHERE`.",
+          "en": "They automatically create indexes for every column in `WHERE`.",
+          "isCorrect": false
+        }
+      ],
+      "explanation": {
+        "uk": "",
+        "en": ""
+      }
+    },
+    {
+      "slug": "http-httponly-cookie-csrf",
+      "topicSlug": "http-web-security",
+      "prompt": {
+        "uk": "Чому збереження JWT або сесійного токена в `HttpOnly` cookie безпечніше від XSS, ніж у `localStorage`, і який ризик при цьому треба закрити (CSRF)?",
+        "en": "Why is storing a session token in an `HttpOnly` cookie safer against XSS than `localStorage`, and what complementary risk (CSRF) must you mitigate when a browser sends cookies automatically across origins?"
+      },
+      "answer": {
+        "uk": "Скрипт у браузері (XSS) не може прочитати `HttpOnly` cookie через `document.cookie`, на відміну від `localStorage`. Але оскільки браузер підставляє cookie автоматично, треба захиститися від CSRF через `SameSite=Lax` (або `Strict`) та перевірку Origin/CSRF-токена.",
+        "en": "Client-side JavaScript (XSS) cannot read an `HttpOnly` cookie via `document.cookie`, unlike `localStorage`. Because browsers attach cookies automatically on requests, you must mitigate CSRF using `SameSite=Lax` (or `Strict`) and origin/CSRF token checks."
+      },
+      "quizOptions": [],
+      "explanation": {
+        "uk": "Навіть із `HttpOnly` cookie XSS все одно може робити запити від імені користувача, тому санітизація й відсутність `dangerouslySetInnerHTML` залишаються обов'язковими.",
+        "en": "Even with `HttpOnly` cookies, XSS can still trigger authenticated requests, so escaping output remains mandatory."
+      }
+    },
+    {
+      "slug": "http-authn-vs-authz",
+      "topicSlug": "http-web-security",
+      "prompt": {
+        "uk": "У чому різниця між автентифікацією (Authentication) та авторизацією (Authorization) і які HTTP-статуси їм відповідають?",
+        "en": "What is the difference between Authentication and Authorization, and which HTTP status codes correspond to each?"
+      },
+      "answer": {
+        "uk": "Автентифікація перевіряє, хто ви (`401 Unauthorized`, коли вхід не виконано або токен невалідний). Авторизація перевіряє, чи маєте ви права на конкретну дію (`403 Forbidden`, коли користувач відомий, але доступу немає).",
+        "en": "Authentication verifies who you are (`401 Unauthorized` when unauthenticated or token is invalid). Authorization verifies whether you have permission for the action (`403 Forbidden` when authenticated but not allowed)."
+      },
+      "quizOptions": [],
+      "explanation": {
+        "uk": "У TechRemind гість при спробі зберегти прогрес або створити особисту збірку отримує `401`, а чужий доступ до збірки — `403`.",
+        "en": "In TechRemind, an unauthenticated request to a protected action returns `401`, while accessing another user's private resource returns `403`."
+      }
+    },
+    {
+      "slug": "http-password-hashing",
+      "topicSlug": "http-web-security",
+      "prompt": {
+        "uk": "Чому паролі в базі даних треба хешувати повільними функціями (`bcrypt`, `Argon2`), а не `SHA-256`?",
+        "en": "Why should passwords be hashed with slow adaptive functions (`bcrypt`, `Argon2`) rather than `SHA-256`?"
+      },
+      "answer": {
+        "uk": "`SHA-256` — швидкий хеш для перевірки цілісності файлів, тому його легко перебирати мільярдами спроб на GPU. Адаптивні алгоритми на кшталт `bcrypt` або `Argon2` використовують сіль і навмисно сповільнюють обчислення, ускладнюючи брутфорс.",
+        "en": "`SHA-256` is designed to be fast, making brute-force attacks on GPUs trivial. Adaptive password hashes like `bcrypt` and `Argon2` include per-password salts and tunable work factors that drastically slow down offline guessing."
+      },
+      "quizOptions": [],
+      "explanation": {
+        "uk": "",
+        "en": ""
+      }
+    }
+  ],
+  "sampleUsers": [
+    {
+      "role": "user",
+      "progress": [
+        {
+          "topicSlug": "javascript",
+          "questionSlug": "js-event-loop-microtasks",
+          "status": "known",
+          "statusUpdatedDaysAgo": 2
+        },
+        {
+          "topicSlug": "javascript",
+          "questionSlug": "js-closure-memory-leak",
+          "status": "known",
+          "statusUpdatedDaysAgo": 18
+        },
+        {
+          "topicSlug": "javascript",
+          "questionSlug": "js-equality-type-coercion",
+          "status": "unknown",
+          "statusUpdatedDaysAgo": 1
+        },
+        {
+          "topicSlug": "javascript",
+          "questionSlug": "js-this-arrow-function",
+          "status": "for_review",
+          "statusUpdatedDaysAgo": 5
+        },
+        {
+          "topicSlug": "javascript",
+          "questionSlug": "js-promise-combinators",
+          "status": "for_review",
+          "statusUpdatedDaysAgo": 35
+        },
+        {
+          "topicSlug": "react",
+          "questionSlug": "react-list-keys",
+          "status": "known",
+          "statusUpdatedDaysAgo": 3
+        },
+        {
+          "topicSlug": "sql-databases",
+          "questionSlug": "sql-inner-vs-left-join",
+          "status": "known",
+          "statusUpdatedDaysAgo": 50
+        }
+      ]
+    }
+  ]
+}

@@ -75,3 +75,45 @@ Also keep the "API endpoints" section up to date.
 ## Decision log
 
 <!-- Add your decisions here, newest first. -->
+
+### 2026-11-27 — Data storage: Neon PostgreSQL
+
+- **Context:** User progress (question statuses and dates) is the core value of the app and must survive restarts and redeploys.
+- **Decision:** Managed PostgreSQL on Neon (free plan). One Neon branch for local development, the main branch for the deployed app.
+- **Alternatives:** In memory or JSON file — data is lost on restart on free hosting. MongoDB Atlas — the data is relational (users, topics, questions, per-user statuses).
+- **Consequences:** Needs `DATABASE_URL` in `.env` and on Render; schema and migrations are decided in Step 5.
+
+### 2026-11-27 — Hosting: Render free web service
+
+- **Context:** A live link makes the portfolio project stronger; the starter runs as one Node.js service.
+- **Decision:** One Render free web service (build `npm ci --include=dev && npm run build`, start `npm start`).
+- **Alternatives:** Render PostgreSQL — expires after 30 days, so the database stays on Neon.
+- **Consequences:** The service sleeps after 15 minutes without traffic; the first request then takes about a minute. No background jobs can be relied on.
+
+### 2026-11-27 — Authentication: own email + password with HTTP-only cookie
+
+- **Context:** Users need saved progress; requirements ask for simple email + password login only.
+- **Decision:** Own authentication in the Express API: register, login, logout; passwords stored hashed; session in an HTTP-only cookie. Users have a role: `user` or `admin`.
+- **Alternatives:** External auth service (Clerk, Auth0, Supabase Auth) — an extra service and keys for a simple requirement.
+- **Consequences:** Needs `AUTH_SECRET` in `.env`. Frontend and API share one origin, so no CORS setup.
+
+### 2026-11-27 — Status decay is calculated on read
+
+- **Context:** `Known` becomes `For Review` after 14 days, `For Review` becomes `Unknown` after 30 days.
+- **Decision:** Store the status and the date it was set; the current status is calculated when it is read.
+- **Alternatives:** A scheduled job that updates statuses — does not run while the free Render service sleeps.
+- **Consequences:** No scheduler; statuses are always correct at the moment they are shown.
+
+### 2026-11-27 — Training sessions are not stored in MVP
+
+- **Context:** Guests have no account; training history for Users is out of scope.
+- **Decision:** The API builds the session queue; each User answer immediately updates that question's status; the Session Result is calculated on the client. Guests write nothing to the database.
+- **Alternatives:** Storing sessions — needed only for training history, which is out of scope.
+- **Consequences:** Adding training history later means adding a new table, without rewriting existing data.
+
+### 2026-11-27 — Seeding
+
+- **Context:** Public content lives in `data/seed.json` and must be updatable over time (new questions, enabling quiz per topic).
+- **Decision:** The seed runs on every server start and never creates duplicates: topics are matched by `slug`, questions by their own `slug`. The seed never changes user progress. Two accounts are created on start: a test user (role `user`) and an admin (role `admin`); their emails and passwords come from environment variables, not from `seed.json`. The test user gets the demo progress from `seed.json` once, when the account is created; after that its progress changes like any other User's.
+- **Alternatives:** Seeding by hand once — new questions and quiz updates would need a manual step after every deploy.
+- **Consequences:** Updating public content = edit `seed.json`, push, redeploy. Editing a question's text keeps its progress because the `slug` does not change.

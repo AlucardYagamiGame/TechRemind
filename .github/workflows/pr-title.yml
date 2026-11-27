@@ -1,0 +1,26 @@
+name: PR title
+
+# Checks that the PR title follows Conventional Commits.
+# Pull requests are squash-merged into develop, so the title becomes the commit message.
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  check-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          pattern='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\((web|api|e2e|docs|db|deps)\))?!?: .{1,72}$'
+          if [[ ! "$TITLE" =~ $pattern ]]; then
+            echo "PR title does not follow Conventional Commits: $TITLE"
+            echo "Expected: type(scope): subject   e.g. feat(api): add login endpoint"
+            exit 1
+          fi
