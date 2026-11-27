@@ -1,0 +1,81 @@
+name: PR description
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  describe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v8
+        with:
+          script: |
+            const START = '<!-- auto:start -->';
+            const END = '<!-- auto:end -->';
+            const AREAS = ['web', 'api', 'e2e', 'docs', 'data', 'ci', 'root'];
+
+            const areaOf = (path) => {
+              if (path.startsWith('apps/web/')) return 'web';
+              if (path.startsWith('apps/api/')) return 'api';
+              if (path.startsWith('e2e/')) return 'e2e';
+              if (path.startsWith('docs/')) return 'docs';
+              if (path.startsWith('data/')) return 'data';
+              if (path.startsWith('.github/') || path === 'render.yaml') return 'ci';
+              return 'root';
+            };
+
+            const pullNumber = context.payload.pull_request.number;
+            const params = { ...context.repo, pull_number: pullNumber, per_page: 100 };
+
+            // Read the current description, not the one from the event:
+            // you may have edited it since the PR was opened.
+            const { data: pr } = await github.rest.pulls.get({ ...context.repo, pull_number: pullNumber });
+            const commits = await github.paginate(github.rest.pulls.listCommits, params);
+            const files = await github.paginate(github.rest.pulls.listFiles, params);
+
+            const commitLines = commits.map((c) => `- ${c.commit.message.split('\n')[0]}`);
+
+            const fileLines = AREAS.flatMap((area) => {
+              const list = files
+                .filter((f) => areaOf(f.filename) === area)
+                .map((f) => `\`${f.filename}\` (${f.status})`);
+              return list.length ? [`- **${area}:** ${list.join(', ')}`] : [];
+            });
+
+            const block = [
+              START,
+              '**Commits**',
+              '',
+              ...commitLines,
+              '',
+              '**Files by area**',
+              '',
+              ...fileLines,
+              END,
+            ].join('\n');
+
+            let body = (pr.body ?? '').replace(/\r\n/g, '\n');
+
+            if (body.includes(START) && body.includes(END)) {
+              // Later pushes: replace the old block.
+              const from = body.indexOf(START);
+              const to = body.indexOf(END) + END.length;
+              body = body.slice(0, from) + block + body.slice(to);
+            } else if (body.includes('## Changes')) {
+              // First run on the template: put the block under "## Changes"
+              // instead of the empty "-" placeholder.
+              body = body.replace(
+                /## Changes\n(\n<!--[\s\S]*?-->\n)?(\n-\n)?/,
+                (_match, comment = '') => `## Changes\n${comment}\n${block}\n`,
+              );
+            } else {
+              // No template (e.g. PR opened from the command line).
+              body = `${body.trim()}\n\n## Changes\n\n${block}\n`.trimStart();
+            }
+
+            await github.rest.pulls.update({ ...context.repo, pull_number: pullNumber, body });
