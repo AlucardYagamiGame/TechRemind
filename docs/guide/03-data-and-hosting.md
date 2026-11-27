@@ -49,7 +49,7 @@ Avoid Render's free PostgreSQL for this project: it expires after 30 days.
       name: my-app
       runtime: node
       plan: free
-      branch: main
+      branch: master
       buildCommand: npm ci --include=dev && npm run build
       startCommand: npm start
       healthCheckPath: /api/version

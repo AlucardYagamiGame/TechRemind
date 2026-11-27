@@ -19,7 +19,7 @@ If your app uses a cloud database, make sure the backend reads the connection st
 
 ## 8.2 Deploy to Render
 
-1. Push your latest `main` to GitHub.
+1. Push your latest `master` to GitHub.
 2. Sign up at [render.com](https://render.com) with your GitHub account.
 3. **New → Web Service**, select your repository.
 4. Settings:
@@ -27,7 +27,7 @@ If your app uses a cloud database, make sure the backend reads the connection st
 | Setting | Value |
 | --- | --- |
 | Language | Node |
-| Branch | `main` |
+| Branch | `master` |
 | Build command | `npm ci --include=dev && npm run build` |
 | Start command | `npm start` |
 | Instance type | **Free** |

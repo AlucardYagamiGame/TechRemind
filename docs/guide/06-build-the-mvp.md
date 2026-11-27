@@ -40,7 +40,9 @@ branch → /plan-feature → review the plan → /implement → check in the bro
 ### 1. Create a branch
 
 ```bash
-git switch -c feature/<short-name>
+git switch develop
+git pull
+git switch -c feat/<short-name>
 ```
 
 ### 2. Plan
@@ -110,14 +112,14 @@ You should be able to explain every part of your app in an interview.
 git status
 git diff                 # read what changed
 git add .
-git commit -m "Add <feature>"
-git push -u origin feature/<short-name>
+git commit -m "feat(<scope>): <what it does>"   # Conventional Commits, see docs/git-workflow.md
+git push -u origin feat/<short-name>
 ```
 
-On GitHub open a pull request **in your repository** and merge it. Then:
+On GitHub open a pull request **in your repository** into `develop` (the PR template fills in the description; the title follows Conventional Commits) and squash-merge it. Then:
 
 ```bash
-git switch main
+git switch develop
 git pull
 ```
 
@@ -138,6 +140,6 @@ git pull
 - [ ] `npm run verify` and `npm run test:e2e` pass.
 - [ ] At least one Playwright test covers the main user flow.
 - [ ] `docs/architecture/` is up to date: API endpoints, data model, new decisions.
-- [ ] Work is merged into `main` in small, meaningful commits.
+- [ ] Work is merged into `develop` in small, meaningful commits.
 
 Next: [Step 7. Add a feature](07-add-a-feature.md) (optional)
