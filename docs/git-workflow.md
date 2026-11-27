@@ -24,10 +24,27 @@ git push -u origin feat/<short-name>
 ```
 
 1. Open a pull request into **`develop`**. The PR template is filled in automatically.
-2. Title = Conventional Commit (checked by the `PR title` workflow).
+2. Title = Conventional Commit. If it is missing or invalid, the `PR` workflow generates it (release PR, first valid commit message, or branch name), then checks it.
 3. `npm run verify` must pass.
 4. **Squash and merge**: the PR title becomes the single commit on `develop`.
 5. Delete the branch, then `git switch develop && git pull`.
+
+## Keeping a branch up to date (rebase)
+
+Update a work branch with rebase, not merge, so its history stays linear:
+
+```bash
+git fetch
+git rebase origin/develop
+# on conflict: fix the files, git add <file>, git rebase --continue
+# to cancel:   git rebase --abort
+git push --force-with-lease
+```
+
+- Rebase only your own work branches. Never rebase `develop` or `master`.
+- After a rebase push with `--force-with-lease`, never plain `--force`: it refuses to overwrite commits you have not fetched.
+- Rebase on `origin/develop` before opening a PR and whenever the PR shows conflicts.
+- Releases `develop` → `master` keep using a merge commit.
 
 ## Release
 
@@ -63,7 +80,7 @@ optional footer: BREAKING CHANGE: ..., Refs: docs/features/<name>.md
 | `style` | Formatting only |
 | `revert` | Reverts an earlier commit |
 
-**Scopes** (optional): `web`, `api`, `e2e`, `docs`, `db`, `deps`.
+**Scopes** (optional): `web`, `api`, `e2e`, `docs`, `db`, `deps`, `release` (only in `chore(release)`).
 
 **Subject rules:** imperative mood ("add", not "added"), lowercase start, no trailing period, at most 72 characters. Use `!` after the type or scope, or a `BREAKING CHANGE:` footer, for incompatible changes.
 
@@ -79,6 +96,6 @@ chore(release): 2026-12-01
 
 ## Pull request descriptions
 
-The template in `.github/pull_request_template.md` is applied to every new PR. Fill in Summary, Changes, Related, How to test and the Checks list. When an AI agent opens the PR it writes the description from the commits and the diff, following the same template.
+The template in `.github/pull_request_template.md` is applied to every new PR. Fill in Summary, Related, How to test and the Checks list; the `PR` workflow fills in Changes with the commits and changed files. When an AI agent opens the PR it writes the description from the commits and the diff, following the same template.
 
 Agents do not commit or push unless asked (see `AGENTS.md`).
